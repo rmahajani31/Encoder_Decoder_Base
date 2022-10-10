@@ -1,3 +1,6 @@
 *.txt
+*.pkl
+*.sh
+data/
 europarl_bilingual/
 .ipynb_checkpoints/
