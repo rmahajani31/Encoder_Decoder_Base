@@ -2,6 +2,7 @@
 *.pkl
 *.sh
 *.pem
+*.zip
 data/
 europarl_bilingual/
 .ipynb_checkpoints/
