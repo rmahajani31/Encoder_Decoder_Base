@@ -111,6 +111,7 @@ def auto_reg_collate_fn(batch):
 max_len = 512
 dataset_batch_size = 200000
 batch_size = 16
+num_batches = 10
 train_datasets = []
 train_dataloaders = []
 valid_dataset = None
