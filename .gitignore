@@ -1,6 +1,5 @@
 *.txt
 *.pkl
-*.sh
 *.pem
 *.zip
 data/
