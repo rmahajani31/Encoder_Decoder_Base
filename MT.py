@@ -288,8 +288,8 @@ for epoch_num in range(epochs):
       print(f"Saving model after training epoch {epoch_num} with loss {min_valid_epoch_loss}...")
       with open("./log.txt", "a+") as f:
         f.write(f"Saving model after training epoch {epoch_num} with loss {min_valid_epoch_loss}...\n")
-      torch.save(enc.state_dict(), f"./best_enc_{epoch_num}_{min_valid_epoch_loss}.bin")
-      torch.save(dec.state_dict(), f"./best_dec_{epoch_num}_{min_valid_epoch_loss}.bin")
+      torch.save(enc.state_dict(), f"./best_enc.bin")
+      torch.save(dec.state_dict(), f"./best_dec.bin")
     epoch_end_time = time.time()
     epoch_total_time = epoch_end_time-epoch_start_time
     print(f"VALID_EPOCH_END,loss:{valid_epoch_loss},time:{epoch_total_time/60}")
