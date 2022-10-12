@@ -196,13 +196,13 @@ print(f"number of batches: {dataset_batch_size/batch_size}")
 train_losses = []
 valid_losses = []
 min_valid_epoch_loss = float("inf")
-total_trainloaders_len = sum([len(x) for x in train_dataloaders])
 for epoch_num in range(epochs):
   print(f"EPOCH {epoch_num}")
   running_loss = 0
   epoch_start_time = time.time()
   enc.train()
   dec.train()
+  total_train_batches = 0
   for train_batch_num in range(1,num_train_batches+1):
     cur_train_ds = MTDataset(en_fr_df.loc[(train_batch_num-1)*dataset_batch_size:min(train_batch_num*dataset_batch_size,len(en_fr_df))].reset_index(drop=True),max_len,train_batch_num)
     train_dataloader = DataLoader(cur_train_ds, batch_size=batch_size, collate_fn=collate_fn)
@@ -225,6 +225,7 @@ for epoch_num in range(epochs):
       encoder_optimizer.zero_grad()
       decoder_optimizer.zero_grad()
       running_loss += loss
+      total_train_batches += 1
       if batch_num%500==0:
           batch_end_time = time.time()
           batch_total_time = batch_end_time-batch_start_time
@@ -235,7 +236,7 @@ for epoch_num in range(epochs):
           batch_start_time = time.time()
       #print(f"Finished batch {batch_num} in time {(time.time()-cur_batch_start_time)/60} minutes")
       #cur_batch_start_time = time.time()
-  train_epoch_loss = running_loss/total_trainloaders_len
+  train_epoch_loss = running_loss/total_train_batches
   train_losses.append(train_epoch_loss)
   epoch_end_time = time.time()
   epoch_total_time = epoch_end_time-epoch_start_time
