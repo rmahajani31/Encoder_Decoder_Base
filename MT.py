@@ -107,7 +107,7 @@ def auto_reg_collate_fn(batch):
 
 # In[9]:
 
-
+print("Creating data loaders...")
 max_len = 512
 dataset_batch_size = 200000
 batch_size = 16
@@ -134,7 +134,7 @@ for batch in range(1,num_batches+1):
 
 # In[ ]:
 
-
+print("Computing vocab...")
 vocab = set()
 for batch in range(1,num_batches+1):
   with open(f"./data/fr_token_to_index.pkl_{batch}", "rb") as f:
@@ -199,7 +199,7 @@ print(dec.parameters)
 
 # In[16]:
 
-
+print("Starting training loop...")
 if os.path.exists("./log.txt"):
     os.remove("./log.txt")
 teacher_forcing = True
