@@ -3,8 +3,6 @@
 
 # ## Initialization Code
 
-# In[3]:
-
 
 import torch
 import numpy as np
@@ -27,7 +25,12 @@ import pickle
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"device is: {device}")
+device
+
+
+# ## Below is the main code which needs to be executed to train the encoder decoder architecture
+
+# In[5]:
 
 
 en_fr_df = pd.read_csv("./data/en_fr_df.csv")
@@ -107,34 +110,23 @@ def auto_reg_collate_fn(batch):
 
 # In[9]:
 
-print("Creating data loaders...")
+print("Creating validation and test dataloaders...")
 max_len = 512
 dataset_batch_size = 200000
 batch_size = 16
 num_batches = 10
-train_datasets = []
-train_dataloaders = []
-valid_dataset = None
-valid_dataloader = None
-test_dataset = None
-test_dataloader = None
 num_train_batches = num_batches-2
-for batch in range(1,num_batches+1):
-  cur_ds = MTDataset(en_fr_df.loc[(batch-1)*dataset_batch_size:min(batch*dataset_batch_size,len(en_fr_df))].reset_index(drop=True),max_len,batch)
-  if batch <= num_train_batches:
-    train_datasets.append(cur_ds)
-    train_dataloaders.append(DataLoader(cur_ds, batch_size=batch_size, collate_fn=collate_fn))
-  elif batch == num_batches-1:
-    valid_dataset = cur_ds
-    valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, collate_fn=auto_reg_collate_fn)
-  else:
-    test_dataset = cur_ds
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=auto_reg_collate_fn)
+valid_batch = num_train_batches+1
+valid_dataset = MTDataset(en_fr_df.loc[(valid_batch-1)*dataset_batch_size:min(valid_batch*dataset_batch_size,len(en_fr_df))].reset_index(drop=True),max_len,valid_batch)
+valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, collate_fn=auto_reg_collate_fn)
+# test_batch = num_train_batches+2
+# test_dataset = MTDataset(en_fr_df.loc[(test_batch-1)*dataset_batch_size:min(test_batch*dataset_batch_size,len(en_fr_df))].reset_index(drop=True),max_len,test_batch)
+# test_dataloader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=auto_reg_collate_fn)
 
 
 # In[ ]:
 
-print("Computing vocab...")
+print("Computing vocab size...")
 vocab = set()
 for batch in range(1,num_batches+1):
   with open(f"./data/fr_token_to_index.pkl_{batch}", "rb") as f:
@@ -143,9 +135,6 @@ for batch in range(1,num_batches+1):
 vocab_size = len(vocab)
 print(f"Vocab size is: {vocab_size}")
 
-
-
-# In[12]:
 
 
 class Encoder(nn.Module):
@@ -180,7 +169,6 @@ class Decoder(nn.Module):
     x = self.softmax_layer(x)
     return hidden,x
 
-# In[15]:
 
 
 emb_dim = 300
@@ -215,7 +203,9 @@ for epoch_num in range(epochs):
   epoch_start_time = time.time()
   enc.train()
   dec.train()
-  for train_dataloader in train_dataloaders:
+  for train_batch_num in range(1,num_train_batches+1):
+    cur_train_ds = MTDataset(en_fr_df.loc[(train_batch_num-1)*dataset_batch_size:min(train_batch_num*dataset_batch_size,len(en_fr_df))].reset_index(drop=True),max_len,train_batch_num)
+    train_dataloader = DataLoader(cur_train_ds, batch_size=batch_size, collate_fn=collate_fn)
     batch_start_time = time.time()
     cur_batch_start_time = time.time()
     for batch_num,batch in enumerate(tqdm(train_dataloader)):
@@ -308,4 +298,6 @@ with open("./data/train_losses.pkl", "wb") as f:
   pickle.dump(train_losses, f)
 with open("./data/valid_losses.pkl", "wb") as f:
   pickle.dump(valid_losses, f)
+
+
 
