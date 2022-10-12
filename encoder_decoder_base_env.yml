@@ -233,7 +233,6 @@ dependencies:
     - catalogue==2.0.8
     - confection==0.0.3
     - cymem==2.0.6
-    - en-core-web-lg==3.4.0
     - jinja2==3.1.2
     - langcodes==3.3.0
     - murmurhash==1.0.8
